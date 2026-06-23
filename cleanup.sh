@@ -7,7 +7,7 @@ ANSIBLE_CFG="$BASE_DIR/ansible.cfg"
 COLLECTIONS_DIR="$BASE_DIR/collections"
 
 echo "========== CLEANUP SCRIPT =========="
-
+cd "$BASE_DIR"
 # ===== MANAGED NODES TASKS =====
 echo "Running cleanup on managed nodes..."
 
