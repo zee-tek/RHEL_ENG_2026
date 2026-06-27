@@ -1,0 +1,25 @@
+---
+- name: Install pkg
+  hosts: dev
+  tasks:
+    - name: install wget
+      yum:
+        name: wget
+        state: present
+
+- name: Install RPM Development tools
+  hosts: test
+  tasks:
+    - name: insall group soft
+      yum:
+        name: "@RPM Development Tools"
+        state: present
+
+
+- name: Patch the system
+  hosts: prod
+  tasks:
+    - name: update system
+      yum:
+        name: '*'
+        state: latest
