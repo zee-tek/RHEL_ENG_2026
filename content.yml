@@ -2,6 +2,13 @@
 - name: create a link
   hosts: dev
   tasks:
+
+
+    - name: Install httpd pkg
+      yum:
+        name: httpd
+        state: present
+
     - name: create a web directory
       file:
         path: /web
