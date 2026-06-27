@@ -9,7 +9,7 @@ Gpgkey = http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-rel
 Repository is enabled.
 
 Name = appstream
-Description = App Description
+Description = appstream Description
 Url = http://ec2-100-48-11-172.compute-1.amazonaws.com/AppStream/
 GPG is enabled.
 Gpgkey = http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-release
