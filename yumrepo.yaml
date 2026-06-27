@@ -12,7 +12,7 @@
         enabled: yes
 
 
-    - name: create repo
+    - name: create appstream repo
       yum_repository:
         name: appstream
         description: appstream YUM repo
