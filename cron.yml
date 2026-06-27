@@ -1,0 +1,10 @@
+---
+- name: Cron Play
+  hosts: dev
+  tasks:
+    - name: Create cronjob for user ansi_user
+      cron:
+        name: ansi_user job
+        minute: "*/1"
+        user: ansi_user
+        job: logger "practicing ansible"
