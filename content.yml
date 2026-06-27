@@ -1,0 +1,28 @@
+---
+- name: create a link
+  hosts: dev
+  tasks:
+    - name: create a web directory
+      file:
+        path: /web
+        state: directory
+        group: ansi_user
+        mode: '02775'
+        setype: httpd_sys_content_t
+
+    - name: create index.html file
+      file:
+        path: /web/index.html
+        state: touch
+
+    - name: copy the contents to index.html
+      copy:
+        content: "Learning Ansible"
+        dest: /devweb/index.html
+
+
+    - name: link the directory
+      file:
+        src: /web
+        dest: /var/www/html/web
+        state: link
