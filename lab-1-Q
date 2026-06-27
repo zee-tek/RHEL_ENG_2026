@@ -1,0 +1,7 @@
+#playbook name should be install-pkgs.yml
+
+Tasks:
+#Install wget package on dev hosts
+#Install RPM Development Tools group software on test hosts
+#Update all the softwares or Patch prod hosts
+
