@@ -1,6 +1,6 @@
 Create a playbook content.yml and it should run on dev group.
 
-1) install httpd package
+1) install httpd package.
 
 2) Create a directory /web and it should be owned by ansi_user group.
 
