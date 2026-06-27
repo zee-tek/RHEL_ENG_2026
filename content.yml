@@ -18,7 +18,7 @@
     - name: copy the contents to index.html
       copy:
         content: "Learning Ansible"
-        dest: /devweb/index.html
+        dest: /web/index.html
 
 
     - name: link the directory
