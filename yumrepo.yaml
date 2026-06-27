@@ -1,0 +1,22 @@
+---
+- name: Configure yum Repo
+  hosts: all
+  tasks:
+    - name: create baseos repo
+      yum_repository:
+        name: baseos
+        description: EPEL YUM repo
+        baseurl: http://ec2-100-48-11-172.compute-1.amazonaws.com/BaseOS/
+        gpgcheck: yes
+        gpgkey: http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-release
+        enabled: yes
+
+
+    - name: create repo
+      yum_repository:
+        name: appstream
+        description: appstream YUM repo
+        baseurl: http://ec2-100-48-11-172.compute-1.amazonaws.com/AppStream/
+        gpgcheck: yes
+        gpgkey: http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-release
+        enabled: yes
