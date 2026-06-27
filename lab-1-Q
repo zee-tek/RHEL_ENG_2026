@@ -4,4 +4,6 @@ Tasks:
 #Install wget package on dev hosts
 #Install RPM Development Tools group software on test hosts
 #Update all the softwares or Patch prod hosts
+#
+# Use Multiple Plays in this playbook
 
