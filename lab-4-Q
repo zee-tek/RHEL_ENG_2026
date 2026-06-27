@@ -1,8 +1,15 @@
 Create a playbook content.yml and it should run on dev group.
-i) Create a directory /web and it should be owned by ansi_user group.
-ii) /web directory should have context type as "httpd"
-iii) Assign the permission for user=rwx,group=rwx,others=rx and group special permission
+
+1) install httpd package
+
+2) Create a directory /web and it should be owned by ansi_user group.
+
+3) /web directory should have context type as "httpd"
+
+4) Assign the permission for user=rwx,group=rwx,others=rx and group special permission
 should be applied to /web.
-iv) Create an index.html file under /web directory and the file should have the content
+
+5) Create an index.html file under /web directory and the file should have the content
 "Learning Ansible".
-v) Link the /web directory to /var/www/html/web.
+
+6) Link the /web directory to /var/www/html/web.
