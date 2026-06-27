@@ -1,0 +1,15 @@
+
+Practice using keys when writing playbook in vim
+
+Note: before using press ESC to go into ESC mode
+
+1) :set cuc     (to turn on vertical line (cursor column)
+
+2) :set nocuc   (to turn off cursor column)
+
+3) Use Two Spaces wherever required to add space
+
+4) for bigger playbook if you need to fold the lines
+
+     zfG    (to fold lines)
+     za     (to unfold lines)
