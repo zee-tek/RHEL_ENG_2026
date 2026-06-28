@@ -5,7 +5,7 @@
     - name: create baseos repo
       yum_repository:
         name: baseos
-        description: EPEL YUM repo
+        description: Baseos Description
         baseurl: http://ec2-100-48-11-172.compute-1.amazonaws.com/BaseOS/
         gpgcheck: yes
         gpgkey: http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-release
@@ -15,7 +15,7 @@
     - name: create appstream repo
       yum_repository:
         name: appstream
-        description: appstream YUM repo
+        description: appstream Description
         baseurl: http://ec2-100-48-11-172.compute-1.amazonaws.com/AppStream/
         gpgcheck: yes
         gpgkey: http://ec2-100-48-11-172.compute-1.amazonaws.com/RPM-GPG-KEY-redhat-release
