@@ -1,0 +1,51 @@
+---
+- name: Cleanup environment before lab
+  hosts: all
+  become: yes
+  tasks:
+
+    # ===== REMOVE /web =====
+    - name: Remove /web directory
+      file:
+        path: /web
+        state: absent
+
+    # ===== REMOVE REPOS =====
+    - name: Remove baseos repo
+      file:
+        path: /etc/yum.repos.d/baseos.repo
+        state: absent
+
+    - name: Remove appstream repo
+      file:
+        path: /etc/yum.repos.d/appstream.repo
+        state: absent
+
+    # ===== REMOVE PACKAGES =====
+    - name: Remove wget
+      yum:
+        name: wget
+        state: absent
+
+    - name: Remove httpd
+      yum:
+        name: httpd
+        state: absent
+
+    - name: Remove RPM Development Tools group
+      yum:
+        name: "@RPM Development Tools"
+        state: absent
+
+    # ===== REMOVE CRON =====
+    - name: Remove cron job
+      cron:
+        name: "ansi_user job"
+        user: ansi_user
+        state: absent
+
+    # ===== REMOVE SYMLINK =====
+    - name: Remove symlink
+      file:
+        path: /var/www/html/web
+        state: absent
