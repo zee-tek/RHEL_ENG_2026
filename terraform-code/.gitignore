@@ -1,0 +1,11 @@
+# Ignore local generated SSH keys
+*.pem
+
+# Ignore Terraform state and runtime files
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Ignore system files
+.DS_Store

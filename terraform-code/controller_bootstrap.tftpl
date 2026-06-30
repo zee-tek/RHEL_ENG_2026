@@ -1,0 +1,54 @@
+#!/bin/bash
+hostnamectl set-hostname controller.example.com
+
+# 1. Create local users immediately so logins work right away
+useradd -m -s /bin/bash ansi_user
+useradd -m -s /bin/bash student
+
+echo "ansi_user ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ansible_users
+echo "student ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/ansible_users
+mkdir -p /home/student/ansible
+
+# 2. Build local DNS records mapping
+cat <<EOT >> /etc/hosts
+%{ for instance in managed_instances ~}
+${instance.private_ip} ${instance.name}.example.com ${instance.name}
+%{ endfor ~}
+EOT
+
+# 3. Setup local profiles and drop the shared private key strings
+mkdir -p /home/ansi_user/.ssh /home/student/.ssh
+chown -R student:student /home/student
+
+# Drop ansi_user control credentials
+echo "${private_key_pem}" > /home/ansi_user/.ssh/id_rsa
+echo "${public_key_ssh}" > /home/ansi_user/.ssh/id_rsa.pub
+echo "${public_key_ssh}" > /home/ansi_user/.ssh/authorized_keys
+
+# Drop the deterministic student credentials generated from Terraform
+echo "${student_private}" > /home/student/.ssh/id_rsa
+echo "${student_public}" > /home/student/.ssh/id_rsa.pub
+echo "${student_public}" > /home/student/.ssh/authorized_keys
+
+# Cross-populate controller's local ansi_user account to trust student
+echo "${student_public}" >> /home/ansi_user/.ssh/authorized_keys
+
+# Finalize file ownerships and restrictive modes
+chmod 700 /home/ansi_user/.ssh /home/student/.ssh
+chmod 600 /home/ansi_user/.ssh/* /home/student/.ssh/*
+chown -R ansi_user:ansi_user /home/ansi_user/.ssh
+chown -R student:student /home/student/.ssh
+
+# 4. Cache host fingerprint signatures locally to strip prompt validations
+%{ for instance in managed_instances ~}
+ssh-keyscan -H ${instance.private_ip} >> /home/ansi_user/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -H ${instance.name} >> /home/ansi_user/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -H ${instance.private_ip} >> /home/student/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -H ${instance.name} >> /home/student/.ssh/known_hosts 2>/dev/null
+%{ endfor ~}
+
+# 5. Native package execution loops
+yum update -y
+yum install -y ansible-core vim-enhanced
+echo "set cuc" >> /etc/vimrc
+echo "highlight CursorColumn cterm=NONE ctermbg=darkred ctermfg=white" >> /etc/vimrc
