@@ -1,4 +1,4 @@
-# Lab 1: Configure Yum Repository
+# Lab 2: Configure Yum Repository
 
 Configure Yum repositories on all managed nodes with the following details:
 
