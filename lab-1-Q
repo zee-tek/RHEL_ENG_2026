@@ -1,9 +1,18 @@
-#playbook name should be install-pkgs.yml
+# Ansible Lab Task – Install Packages Using Multiple Plays
 
-Tasks:
-#Install wget package on dev hosts
-#Install RPM Development Tools group software on test hosts
-#Update all the softwares or Patch prod hosts
-#
-# Use Multiple Plays in this playbook
+Create an Ansible playbook named `install-pkgs.yml` using **multiple plays** to perform the following tasks:
 
+## Requirements
+
+1. On `dev` hosts:
+   - Install the `wget` package.
+
+2. On `test` hosts:
+   - Install the **RPM Development Tools** package group.
+
+3. On `prod` hosts:
+   - Update all installed packages (apply latest patches).
+
+## Notes
+
+- Ensure the playbook uses **multiple plays** (separate plays for each host group).
