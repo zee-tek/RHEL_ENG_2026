@@ -8,7 +8,7 @@ Create an Ansible playbook named `install-pkgs.yml` using **multiple plays** to 
    - Install the `wget` package.
 
 2. On `test` hosts:
-   - Install the **RPM Development Tools** package group.
+   - Install the **RPM Development Tools** group Software.
 
 3. On `prod` hosts:
    - Update all installed packages (apply latest patches).
