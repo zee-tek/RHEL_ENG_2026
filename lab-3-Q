@@ -1,4 +1,0 @@
-Create a cronjob for user 'ansi_user' in dev group, the playbook name 'cron.yml' and the job
-details are below
-
-1) Every 2 minutes the job will execute logger "practicing ansible"
