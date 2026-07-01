@@ -1,34 +1,35 @@
 ---
-- name: create a link
-  hosts: dev
+- name: create directory and files
+  hosts: localhost
   tasks:
-
 
     - name: Install httpd pkg
       yum:
         name: httpd
         state: present
 
-    - name: create a web directory
+    - name: create web directory
       file:
         path: /web
         state: directory
         group: ansi_user
         mode: '02775'
-        setype: httpd_sys_content_t
 
-    - name: create index.html file
-      file:
-        path: /web/index.html
-        state: touch
-
-    - name: copy the contents to index.html
+    - name: create index.html with content
       copy:
         content: "Learning Ansible"
         dest: /web/index.html
 
+    - name: set SELinux context
+      sefcontext:
+        target: '/web(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
 
-    - name: link the directory
+    - name: apply SELinux context
+      command: restorecon -Rv /web
+
+    - name: create link
       file:
         src: /web
         dest: /var/www/html/web
