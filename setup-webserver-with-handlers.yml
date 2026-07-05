@@ -1,0 +1,41 @@
+---
+- name: Setup WebServer
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Install httpd package
+      dnf:
+        name:
+          - httpd
+          - firewalld
+        state: present
+
+      notify: you can start service
+ 
+    - name: Add http service in firewall rule
+      firewalld:
+        service: http
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+    - name: Copy web content
+      lineinfile:
+        line: "Learning RHCE"
+        path: /var/www/html/index.html
+        create: yes
+
+
+
+  handlers:
+    
+    - name: start service httpd
+      listen: you can start service
+      service:
+        name: "{{item}}"
+        state: started
+        enabled: yes
+      loop:
+        - httpd
+        - firewalld

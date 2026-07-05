@@ -1,0 +1,47 @@
+---
+- name: webserver
+  hosts: dev
+  vars:
+    firewall_rule_svc: "http"
+    pkgs:
+      - httpd
+      - firewalld
+    pkgs_st: "present"
+    file_pth: "/var/www/html/index.html"
+    firewall_st: enabled
+    service_st: started
+    service_enabled: yes
+
+
+  tasks:
+    - name: install httpd and firewalld
+      yum:
+        name: "{{pkgs}}"
+
+        state: "{{pkgs_st}}"
+
+      notify:
+        - trigger
+
+
+    - name: add firewalld rule for http
+      ansible.posix.firewalld:
+        service: "{{firewall_rule_svc}}"
+        state: enabled
+        permanent: true
+        immediate: true
+
+    - name: add index.html
+      lineinfile:
+        line: "Hello WOrld"
+        path: "{{file_pth}}"
+        create: yes
+
+  handlers:
+    - name: start and enable services
+      listen: trigger
+      service:
+        name: "{{item}}"
+        state: started
+        enabled: yes
+      loop: "{{pkgs}}"

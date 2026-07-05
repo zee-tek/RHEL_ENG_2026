@@ -1,0 +1,43 @@
+---
+- name: Create Users
+  hosts: dev
+
+  vars:
+    my_user:
+      - u_name: sam
+        u_uid: 2005
+        u_grp: developers
+        u_exp: 45
+        u_pass: redhat123
+
+
+      - u_name: nill
+        u_uid: 2006
+        u_grp: developers
+        u_exp: 47
+        u_pass: redhat123
+
+
+      - u_name: gerry
+        u_uid: 2008
+        u_grp: developers
+        u_exp: 45
+        u_pass: redhat123
+
+  tasks:
+    - name: create group developers
+      group:
+        name: "{{item['u_grp']}}"
+        state: present
+      loop: "{{my_user}}"
+
+    - name: create user sam, add sam into developers,uid 2005, assign password, set password expiry date
+      user:
+        name: "{{item['u_name']}}"
+        uid: "{{item['u_uid']}}"
+        groups: "{{item['u_grp']}}"
+        password: "{{ item['u_pass'] | password_hash('sha512') }}"
+        password_expire_max: "{{item['u_exp']}}"
+        state: present
+      loop: "{{my_user}}"
+
