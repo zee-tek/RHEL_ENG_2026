@@ -27,16 +27,16 @@
   tasks:
     - name: create group developers
       group:
-        name: "{{item['u_grp']}}"
+        name: "{{item.u_grp}}"
         state: present
       loop: "{{my_user}}"
 
     - name: create user sam, add sam into developers,uid 2005, assign password, set password expiry date
       user:
-        name: "{{item['u_name']}}"
-        uid: "{{item['u_uid']}}"
-        groups: "{{item['u_grp']}}"
-        password: "{{ item['u_pass'] | password_hash('sha512') }}"
+        name: "{{item.u_name}}"
+        uid: "{{item.u_uid}}"
+        groups: "{{item.u_grp}}"
+        password: "{{ item.u_pass | password_hash('sha512') }}"
         password_expire_max: "{{item['u_exp']}}"
         state: present
       loop: "{{my_user}}"
