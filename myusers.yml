@@ -1,0 +1,47 @@
+---
+- name: User Creation
+  hosts: all
+  vars_files:
+    - user_list.yaml
+    - vault.yml
+
+  tasks:
+
+    - name: creating group opsdev
+      when: inventory_hostname in groups.dev or inventory_hostname in groups.test
+      group:
+        name: opsdev
+        state: present
+
+
+    - name: creating group opsmgr
+      when: inventory_hostname in groups.test
+      group:
+        name: opsmgr
+        state: present
+
+
+
+    - name: create user with job developer
+      when: (item.job == 'developer') and (inventory_hostname in groups.dev or inventory_hostname in groups.test)
+      user:
+        name: "{{item.name}}"
+        uid: "{{item.uid}}"
+        password_expire_max: "{{item.password_expire_days}}"
+        password: "{{developer_pw | password_hash('sha512')}}"
+        groups: opsdev
+
+      loop: "{{users}}"
+
+
+
+    - name: create user with job manager
+      when: (item.job == 'manager') and (inventory_hostname in groups.test)
+      user:
+        name: "{{item.name}}"
+        uid: "{{item.uid}}"
+        password_expire_max: "{{item.password_expire_days}}"
+        password: "{{manager_pw | password_hash('sha512')}}"
+        groups: opsmgr
+
+      loop: "{{users}}"
