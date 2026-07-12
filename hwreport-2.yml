@@ -1,0 +1,40 @@
+---
+- name: hardware report
+  hosts: all
+  tasks:
+    - name: Download hwreport and save it
+      uri:
+        url: http://ec2-100-48-11-172.compute-1.amazonaws.com/hwreport.txt
+        method: GET
+        dest: /root
+
+    - name: fill hostname
+      lineinfile:
+        path: /root/hwreport.txt
+        regexp: "{{item.src}}"
+        line: "{{item.dest}}"
+
+      loop:
+
+        - src: "HOSTNAME="
+          dest: "HOSTNAME={{ansible_facts.hostname | default('NONE')}}"
+
+
+        - src: "MEMORY="
+          dest: "MEMORY={{ansible_facts.memtotal_mb | default('NONE')}}"
+
+
+        - src: "BIOS="
+          dest: "BIOS={{ansible_facts.bios_version | default('NONE')}}"
+
+
+        - src: "CPU="
+          dest: "CPU={{ansible_facts.processor_vcpus | default('NONE')}}"
+
+
+        - src: "DISK_SIZE_SDA="
+          dest: "DISK_SIZE_SDA={{ansible_facts.devices.nvme0n1.size | default('NONE')}}"
+
+
+        - src: "DISK_SIZE_SDB="
+          dest: "DISK_SIZE_SDB={{ansible_facts.devices.nvme.size | default('NONE')}}"
