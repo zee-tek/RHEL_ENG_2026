@@ -13,14 +13,11 @@
         name: opsdev
         state: present
 
-
     - name: creating group opsmgr
       when: inventory_hostname in groups.test
       group:
         name: opsmgr
         state: present
-
-
 
     - name: create user with job developer
       when: (item.job == 'developer') and (inventory_hostname in groups.dev or inventory_hostname in groups.test)
@@ -32,8 +29,6 @@
         groups: opsdev
 
       loop: "{{users}}"
-
-
 
     - name: create user with job manager
       when: (item.job == 'manager') and (inventory_hostname in groups.test)
