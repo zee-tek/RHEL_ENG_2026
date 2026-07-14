@@ -13,7 +13,7 @@
         path: /web
         state: directory
         group: ansi_user
-        mode: '02775'
+        mode: '2775'
 
     - name: create index.html with content
       copy:
