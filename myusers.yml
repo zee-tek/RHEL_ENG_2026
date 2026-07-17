@@ -23,6 +23,7 @@
       loop:
         "{{users}}"
 
+
 - name: User Creation
   hosts: test
   vars_files:
