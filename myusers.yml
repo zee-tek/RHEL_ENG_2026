@@ -1,42 +1,48 @@
 ---
 - name: User Creation
-  hosts: all
+  hosts: dev,test
   vars_files:
     - user_list.yaml
     - vault.yml
 
   tasks:
-
-    - name: creating group opsdev
-      when: inventory_hostname in groups.dev or inventory_hostname in groups.test
+    - name: create group
       group:
         name: opsdev
         state: present
 
-    - name: creating group opsmgr
-      when: inventory_hostname in groups.test
+    - name: create user
+      when: "item.job == 'developer'"
+      user:
+        name: "{{item.name}}"
+        uid: "{{item.uid}}"
+        groups: opsdev
+        password: "{{ developer_pw | password_hash('sha512')}}"
+        password_expire_max: "{{item.password_expire_days}}"
+
+      loop:
+        "{{users}}"
+
+- name: User Creation
+  hosts: test
+  vars_files:
+    - user_list.yaml
+    - vault.yml
+
+  tasks:
+    - name: create group
       group:
         name: opsmgr
         state: present
 
-    - name: create user with job developer
-      when: (item.job == 'developer') and (inventory_hostname in groups.dev or inventory_hostname in groups.test)
+    - name: create user
+      when: "item.job == 'manager'"
       user:
         name: "{{item.name}}"
         uid: "{{item.uid}}"
-        password_expire_max: "{{item.password_expire_days}}"
-        password: "{{developer_pw | password_hash('sha512')}}"
-        groups: opsdev
-
-      loop: "{{users}}"
-
-    - name: create user with job manager
-      when: (item.job == 'manager') and (inventory_hostname in groups.test)
-      user:
-        name: "{{item.name}}"
-        uid: "{{item.uid}}"
-        password_expire_max: "{{item.password_expire_days}}"
-        password: "{{manager_pw | password_hash('sha512')}}"
         groups: opsmgr
+        password: "{{ manager_pw | password_hash('sha512')}}"
+        password_expire_max: "{{item.password_expire_days}}"
 
-      loop: "{{users}}"
+      loop:
+        "{{users}}"
