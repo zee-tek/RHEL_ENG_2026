@@ -3,7 +3,6 @@
   hosts: "{{hosts |default('None')}}"
   become: true
   vars:
-    # Target volume group name specified by user
     vg_name: "research"
 
   tasks:
