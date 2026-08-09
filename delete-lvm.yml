@@ -1,0 +1,41 @@
+---
+- name: Remove LVs in research VG, unmount filesystems, and clean fstab (Keep VG intact)
+  hosts: "{{hosts |default('None')}}"
+  become: true
+  vars:
+    # Target volume group name specified by user
+    vg_name: "research"
+
+  tasks:
+    - name: 1. Find all active mounts belonging to the target volume group
+      ansible.builtin.set_fact:
+        vg_mounts: "{{ ansible_mounts | selectattr('device', 'match', '^/dev/mapper/' ~ vg_name ~ '-' ) | list }}"
+
+    - name: Display detected mounts for VG {{ vg_name }}
+      ansible.builtin.debug:
+        msg: "Found mounts to clean up: {{ vg_mounts | map(attribute='mount') | list }}"
+
+    - name: 2. Unmount any active filesystems tied to this Volume Group
+      ansible.builtin.mount:
+        path: "{{ item.mount }}"
+        state: unmounted
+      loop: "{{ vg_mounts }}"
+
+    - name: 3. Remove corresponding entries from /etc/fstab
+      ansible.builtin.mount:
+        path: "{{ item.mount }}"
+        state: absent
+      loop: "{{ vg_mounts }}"
+
+    - name: 4. Get list of Logical Volumes inside the Volume Group
+      ansible.builtin.set_fact:
+        lvs_to_remove: "{{ ansible_lvm.vgs[vg_name].lvs.keys() | list }}"
+      when: ansible_lvm.vgs is defined and vg_name in ansible_lvm.vgs
+
+    - name: 5. Remove all Logical Volumes within the Volume Group (VG is preserved)
+      community.general.lvol:
+        vg: "{{ vg_name }}"
+        lv: "{{ item }}"
+        state: absent
+        force: true
+      loop: "{{ lvs_to_remove | default([]) }}"
