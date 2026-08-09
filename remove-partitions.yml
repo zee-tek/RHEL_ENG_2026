@@ -1,0 +1,62 @@
+---
+- name: Safely unmount, wipe, and delete a partition by mount point
+  hosts: "{{hosts |default('None')}}"
+  become: true
+  vars:
+    # Leave empty here so it must be provided at runtime via -e "target_mountpoint=/your/path"
+    target_mountpoint: ""
+
+  tasks:
+    - name: Fail early if target_mountpoint is empty
+      ansible.builtin.fail:
+        msg: "You must provide a mount point! Run with: -e 'target_mountpoint=/your/path'"
+      when: target_mountpoint | trim == ""
+
+    - name: 1. Find the block device node from mount point
+      ansible.builtin.set_fact:
+        target_device: "{{ item.device }}"
+      loop: "{{ ansible_mounts }}"
+      when:
+        - target_mountpoint | trim != ""
+        - item.mount == target_mountpoint
+
+    - name: Fail if the mount point does not exist or is not currently mounted
+      ansible.builtin.fail:
+        msg: "The mount point '{{ target_mountpoint }}' is not active or does not exist."
+      when: target_device is not defined
+
+    - name: 2. Extract parent disk and partition number safely
+      ansible.builtin.set_fact:
+        disk_device: "{{ target_device | regex_replace('p?[0-9]+$', '') }}"
+        partition_num: "{{ target_device | regex_search('[0-9]+$') }}"
+
+    - name: Display detected targets
+      ansible.builtin.debug:
+        msg: "Mount: {{ target_mountpoint }} | Partition: {{ target_device }} | Disk: {{ disk_device }} | PartNum: {{ partition_num }}"
+
+    - name: 3. Unmount the filesystem
+      ansible.builtin.mount:
+        path: "{{ target_mountpoint }}"
+        state: unmounted
+
+    - name: 4. Remove entry from /etc/fstab
+      ansible.builtin.mount:
+        path: "{{ target_mountpoint }}"
+        state: absent
+
+    - name: 5. Wipe filesystem signatures (wipefs)
+      ansible.builtin.command:
+        cmd: "wipefs -a {{ target_device }}"
+      register: wipefs_output
+      changed_when: "'Wiped' in wipefs_output.stdout or wipefs_output.rc == 0"
+
+    - name: 6. Delete the partition using parted
+      community.general.parted:
+        device: "{{ disk_device }}"
+        number: "{{ partition_num | int }}"
+        state: absent
+
+    - name: 7. Inform kernel of partition table changes
+      ansible.builtin.command:
+        cmd: "partprobe {{ disk_device }}"
+      changed_when: false
